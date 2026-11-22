@@ -1,11 +1,16 @@
 import sqlite3
 from datetime import datetime
+from pathlib import Path
 
-DB_PATH = "data/campus.db"
+# Absolute path based on this file's location, so it works locally and on Streamlit Cloud
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)   # creates the folder if missing
+DB_PATH = str(DATA_DIR / "campus.db")
 
 
 def get_conn():
-    conn = sqlite3.connect(DB_PATH, timeout=10)
+    conn = sqlite3.connect(DB_PATH, timeout=10, check_same_thread=False)
     conn.execute("PRAGMA journal_mode=WAL")
     return conn
 
