@@ -57,3 +57,25 @@ def log_occupancy(occupancy, capacity, camera="cam1"):
         (now_str(), camera, occupancy, capacity))
     conn.commit()
     conn.close()
+import hashlib, os
+
+def _hash(password, salt_hex):
+    return hashlib.pbkdf2_hmac(
+        "sha256", password.encode(), bytes.fromhex(salt_hex), 200_000
+    ).hex()
+
+def seed_users(users):
+    """users = list of (username, password, role). Only creates missing users."""
+    conn = get_conn()
+    for username, password, role in users:
+        exists = conn.execute(
+            "SELECT 1 FROM users WHERE username=?", (username,)
+        ).fetchone()
+        if not exists:
+            salt = os.urandom(16).hex()
+            conn.execute(
+                "INSERT INTO users VALUES (?,?,?,?)",
+                (username, salt, _hash(password, salt), role),
+            )
+    conn.commit()
+    conn.close()   
