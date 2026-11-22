@@ -11,6 +11,13 @@ from db import get_conn, init_db, now_str
 
 st.set_page_config(page_title="Smart Campus Safety", layout="wide")
 init_db()
+from db import init_db, seed_users
+init_db()
+seed_users([
+    ("admin",   "ChooseStrongPass1", "admin"),
+    ("guard",   "ChooseStrongPass2", "security"),
+    ("teacher", "ChooseStrongPass3", "teacher"),
+])
 
 ROLE_PAGES = {
     "admin": ["Overview", "Live", "Alerts", "Attendance", "Analytics"],
